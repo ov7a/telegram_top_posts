@@ -1,0 +1,2 @@
+git+https://github.com/LonamiWebs/Telethon.git@539e3cb8081acbd9a5cc7a61c0731ca62842597e
+
