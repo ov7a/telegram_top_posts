@@ -3,6 +3,7 @@ import asyncio
 import os
 import sys
 from telethon import TelegramClient
+from telethon import utils
 import re
 import keyring
 import json
@@ -34,13 +35,14 @@ api_id = get_api_info('TG_API_ID', 'Enter your API ID: ', int)
 api_hash = get_api_info('TG_API_HASH', 'Enter your API hash: ') 
 
 def get_link(chat_id, message_id):
-	return f"https://t.me/c/{chat_id}/{message_id}"
+	real_id, _ = utils.resolve_id(chat_id)
+	return f"https://t.me/c/{real_id}/{message_id}"
 
 with open(output, "w") as f:
 	async def main():
 		async with TelegramClient(session, api_id, api_hash) as client:
 			entity = await client.get_entity(channel)
-			async for message in client.get_messages(entity=entity):
+			async for message in client.iter_messages(entity=entity):
 				if message.date < cutoff_date:
 					break
 				result = {
@@ -53,7 +55,7 @@ with open(output, "w") as f:
 				reactions = {}
 				if (message.reactions is not None):	
 					for reaction in message.reactions.results:
-						reactions[reaction.reaction] = reaction.count
+						reactions[reaction.reaction.emoticon] = reaction.count
 				result["reactions"] = reactions	
 				f.write(json.dumps(result)+'\n')
 
