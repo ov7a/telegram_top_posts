@@ -41,7 +41,14 @@ def get_link(chat_id, message_id):
 with open(output, "w") as f:
 	async def main():
 		async with TelegramClient(session, api_id, api_hash) as client:
-			entity = await client.get_entity(channel)
+			my_private_channel_id = None
+            	
+			async for dialog in client.iter_dialogs():
+				if dialog.name == channel:
+					my_private_channel_id = dialog.id
+					break
+					
+			entity = await client.get_entity(my_private_channel_id)
 			async for message in client.iter_messages(entity=entity):
 				if message.date < cutoff_date:
 					break
